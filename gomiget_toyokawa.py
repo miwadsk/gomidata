@@ -8,11 +8,11 @@ from bs4 import BeautifulSoup
 
 CATEGORY_MAP = {
     "可燃ごみ": "burnable",
-    "不燃ごみ": "nonburnable",
+    "不燃ごみ": "unburnable",
     "資源": "recyclable",
     "危険ごみ": "hazardous",
     "粗大ごみ": "oversized",
-    "家電リサイクル法対象品目": "specificrecycling",
+    "家電リサイクル法対象品目": "legalrecycling",
     "市で処理できません。": "uncollectible"
 }
 
@@ -62,8 +62,9 @@ def main(args):
             if last_updated_at < updated_at:
                 last_updated_at = updated_at
     result = {
-         "cityName": "豊川市",
+         "municipality": "豊川市",
          "updatedAt": last_updated_at.strftime("%Y-%m-%d"),
+         "sourceUrl": BASE_URI,
          "articles": articles
     }
     json_text = json.dumps(result, indent=2, ensure_ascii=False)
