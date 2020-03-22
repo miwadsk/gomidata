@@ -15,7 +15,8 @@
 * "updatedAt" ([情報更新日](#情報更新日)) : String (任意)
 * "sourceUrl" ([情報取得元URL](#情報取得元URL)) : String (任意)
 * "articles" (品目情報の並び) : Array
-  * "name" (品目名 : String
+  * "name" (品目名) : String
+  * "nameKana" (品目名仮名) : String (任意)
   * "category" ([品目分類](#品目分類)) : String
   * "note" (品目備考) : String (任意)
 
@@ -66,11 +67,13 @@ unknown                    | 分類不明
   "articles": [
     {
       "name": "アイスピック",
+      "nameKana": "あいすぴっく",
       "category": "unburnable",
       "note": "先端にセロテープなどを巻きつけて刺さらないようにしてください。"
     },
     {
       "name": "アイスまくら",
+      "nameKana": "あいすまくら",
       "category": "burnable"
     },
     ...

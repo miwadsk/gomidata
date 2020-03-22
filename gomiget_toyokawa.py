@@ -5,6 +5,8 @@ import json
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
+import pykakasi
+import mojimoji
 
 CATEGORY_MAP = {
     "可燃ごみ": "burnable",
@@ -18,6 +20,7 @@ CATEGORY_MAP = {
 
 BASE_URI = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
 TARGET_PAGES = ["agyo.html", "kagyo.html", "sagyo.html", "tagyo.html", "nagyo.html", "hagyo.html", "magyo.html", "yagyo.html", "ragyo.html", "wagyo.html"]
+ROMAN_TO_KANA = { "a": "えー", "b": "びー", "c": "しー", "d": "でぃー", "e": "いー", "f": "えふ", "g": "じー", "h": "えいち", "i": "あい", "j": "じぇー", "k": "けー", "l": "える", "m": "えむ", "n": "えぬ", "o": "おー", "p": "ぴー", "q": "きゅー", "r": "あーる", "s": "えす", "t": "てぃー", "u": "ゆー", "v": "ぶい", "w": "だぶりゅ", "x": "えっくす", "y": "わい", "z": "ぜっと" }
 
 def get_page_text(uri):
     try:
@@ -27,15 +30,25 @@ def get_page_text(uri):
     except:
         return None
 
+def roman_to_kana(text):
+    return "".join(map(lambda c: ROMAN_TO_KANA.get(c, c), text.lower()))
+
 def get_articles(bsoup):
+    kaka = pykakasi.kakasi()
+    kaka.setMode("K", "H")
+    kaka.setMode("J", "H")
+    converter = kaka.getConverter()
     articles = []
     rows = bsoup.select("caption ~ tr")
     for row in rows:
         cols = row.select("td")
         if len(cols) == 3:
             t = list(map(lambda col: col.get_text(strip=True), cols))
+            name = mojimoji.zen_to_han(t[0], kana=False)
+            name_kana = roman_to_kana(converter.do(name))
             article = {
-                "name": t[0],
+                "name": name,
+                "nameKana": name_kana,
                 "category": CATEGORY_MAP.get(t[1], "unknown"),
                 "note": t[2]
             }
