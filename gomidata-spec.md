@@ -43,7 +43,7 @@ oversized                  | 粗大ごみ
 hazardous                  | 危険ごみ
 recyclable                 | 資源
 recyclable-paper           | 資源 (紙類)
-recyclable-miscpaper       | 資源 (雑がみ)
+recyclable-paperpack       | 資源 (紙製容器包装)
 recyclable-plasticpack     | 資源 (プラ容器包装)
 recyclable-can             | 資源 (空缶)
 recyclable-pet             | 資源 (ペットボトル)
