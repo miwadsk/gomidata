@@ -20,10 +20,12 @@
   * "nameRoman" (品目名ローマ字) : String (任意)
   * "categoryId" ([共通分類ID](#共通分類ID) または [自治体固有分類ID](#自治体固有分類ID)) : String
   * "note" (備考) : String (任意)
-* "localCategories" ([自治体固有分類定義の並び](#自治体固有分類定義の並び)) : Array (任意)
-  * "localCategoryId" ([自治体固有分類ID](#自治体固有分類ID)) : String
-  * "commonCategoryId" ([共通分類ID](#共通分類ID)) : String
-  * "name" (分類表示名) : String
+* "localCategoryDefinition" ([自治体固有分類定義](#自治体固有分類定義)) : Object (任意)
+  * ([共通分類ID](#共通分類ID)) : String
+    * "name" ([自治体固有表示名](#自治体固有表示名)) : String (任意)
+    * "subCategories" : Object (任意)
+      * ([自治体固有分類ID](#自治体固有分類ID)) : Object
+        * "name" (表示名) : String
 
 ### 情報更新日
 
@@ -53,13 +55,17 @@ unknown          | 分類不明
 
 ### 自治体固有分類ID
 
-共通分類ID では分類できない、あるいは独自の分類名を持つ当該自治体固有の分類を示す ID です。  
-[自治体固有分類定義の並び](#自治体固有分類定義の並び) で定義する必要があります。  
-ID は '#' で始まり使用できる文字は英小文字、数字、ピリオド、ハイフンです。
+共通分類ID を細分化した自治体固有の ID です。  
+[自治体固有分類定義](#自治体固有分類定義) で定義する必要があります。  
+ID に使用できる文字は英小文字と数字です。
 
-### 自治体固有分類定義の並び
+### 自治体固有分類定義
 
-自治体固有分類ID と 共通分類ID との紐づけ、および表示名の定義をします。
+共通分類ID に対する自治体固有の表示名の設定と、自治体固有分類ID に対する表示名を設定します。
+
+### 自治体固有表示名
+
+共通分類IDに対する表示名を格納された文字列で上書きします。  
 
 # 3. データ定義例
 
@@ -82,13 +88,17 @@ ID は '#' で始まり使用できる文字は英小文字、数字、ピリオ
     },
     ...
   ],
-  "localCategories": [
-    {
-      "localId": "#ignitablehazardous",
-      "commonId": "hazardous",
-      "name": "発火性危険物"
+  "localCategoryDefinition": {
+    "recyclable": {
+      "name": "資源ステーション",
+      "subCategories": {
+        "paperpackaging": {
+          "name": "紙製容器包装"
+        },
+        ...
+      }
     },
     ...
-  ]
+  }
 }
 ```

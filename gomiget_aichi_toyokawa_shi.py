@@ -18,7 +18,8 @@ CATEGORY_MAP = {
     "市で処理できません。": "uncollectible"
 }
 
-BASE_URI = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
+SOURCE_URI = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
+TARGET_URI_BASE = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
 TARGET_PAGES = ["agyo.html", "kagyo.html", "sagyo.html", "tagyo.html", "nagyo.html", "hagyo.html", "magyo.html", "yagyo.html", "ragyo.html", "wagyo.html"]
 ROMAN_TO_KANA = { "a": "えー", "b": "びー", "c": "しー", "d": "でぃー", "e": "いー", "f": "えふ", "g": "じー", "h": "えいち", "i": "あい", "j": "じぇー", "k": "けー", "l": "える", "m": "えむ", "n": "えぬ", "o": "おー", "p": "ぴー", "q": "きゅー", "r": "あーる", "s": "えす", "t": "てぃー", "u": "ゆー", "v": "ぶい", "w": "だぶりゅ", "x": "えっくす", "y": "わい", "z": "ぜっと" }
 
@@ -34,10 +35,15 @@ def roman_to_kana(text):
     return "".join(map(lambda c: ROMAN_TO_KANA.get(c, c), text.lower()))
 
 def get_articles(bsoup):
-    kaka = pykakasi.kakasi()
-    kaka.setMode("K", "H")
-    kaka.setMode("J", "H")
-    converter = kaka.getConverter()
+    kakaHira = pykakasi.kakasi()
+    kakaHira.setMode("K", "H")
+    kakaHira.setMode("J", "H")
+    converterHira = kakaHira.getConverter()
+    kakaRoman = pykakasi.kakasi()
+    kakaRoman.setMode("H", "a")
+    kakaRoman.setMode("K", "a")
+    kakaRoman.setMode("J", "a")
+    converterRoman = kakaRoman.getConverter()
     articles = []
     rows = bsoup.select("caption ~ tr")
     for row in rows:
@@ -45,13 +51,19 @@ def get_articles(bsoup):
         if len(cols) == 3:
             t = list(map(lambda col: col.get_text(strip=True), cols))
             name = mojimoji.zen_to_han(t[0], kana=False)
-            name_kana = roman_to_kana(converter.do(name))
+            name_kana = roman_to_kana(converterHira.do(name))
+            name_roman = converterRoman.do(name)
+            categoryId = CATEGORY_MAP.get(t[1], "unknown")
+            note = t[2]
             article = {
                 "name": name,
                 "nameKana": name_kana,
-                "category": CATEGORY_MAP.get(t[1], "unknown"),
-                "note": t[2]
+                "nameRoman": name_roman,
+                "categoryId": categoryId
             }
+            if note:
+                article["note"] = note
+
             articles.append(article)
     return articles
 
@@ -66,7 +78,7 @@ def main(args):
     last_updated_at = datetime.min
     articles = []
     for page in TARGET_PAGES:
-        uri = BASE_URI + page
+        uri = TARGET_URI_BASE + page
         page_text = get_page_text(uri)
         if page_text:
             bsoup = BeautifulSoup(page_text, "html.parser")
@@ -77,7 +89,7 @@ def main(args):
     result = {
          "municipality": "豊川市",
          "updatedAt": last_updated_at.strftime("%Y-%m-%d"),
-         "sourceUrl": BASE_URI,
+         "sourceUrl": SOURCE_URI,
          "articles": articles
     }
     json_text = json.dumps(result, indent=2, ensure_ascii=False)
