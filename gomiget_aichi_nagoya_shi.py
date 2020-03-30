@@ -1,136 +1,66 @@
 #!/usr/bin/env python3
 
+import re
 import sys
-import json
-import requests
-from datetime import datetime
-from bs4 import BeautifulSoup
-import pykakasi
-import mojimoji
+from gomiget import GomigetBase, GomigetSetting
 
-CATEGORY_MAP = {
-    "可燃ごみ": "burnable",
-    "不燃ごみ": "unburnable",
-    "粗大ごみ": "oversized",
-    "発火性危険物": "hazardous",
-    "紙製容器包装": "paperpackaging",
-    "プラ容器包装": "plasticpackaging",
-    "空きびん": "grassbottole",
-    "空き缶": "can",
-    "紙パック": "beveragepack",
-    "食用油": "edibleoil",
-    "小型家電": "smallappliances"
-}
-
-SOURCE_URI = "http://www.city.nagoya.jp/kurashi/category/5-6-22-0-0-0-0-0-0-0.html"
-TARGET_URI_BASE = "http://www.city.nagoya.jp/kankyo/page/"
-TARGET_PAGES = [ "0000066278.html", "0000066280.html", "0000066282.html", "0000066283.html", "0000066302.html", "0000066303.html", "0000066305.html", "0000066307.html", "0000066308.html", "0000066309.html" ]
-ROMAN_TO_KANA = { "a": "えー", "b": "びー", "c": "しー", "d": "でぃー", "e": "いー", "f": "えふ", "g": "じー", "h": "えいち", "i": "あい", "j": "じぇー", "k": "けー", "l": "える", "m": "えむ", "n": "えぬ", "o": "おー", "p": "ぴー", "q": "きゅー", "r": "あーる", "s": "えす", "t": "てぃー", "u": "ゆー", "v": "ぶい", "w": "だぶりゅ", "x": "えっくす", "y": "わい", "z": "ぜっと" }
-
-def get_page_text(uri):
-    try:
-        response = requests.get(uri)
-        response.encoding = response.apparent_encoding
-        return response.text
-    except:
-        return None
-
-def roman_to_kana(text):
-    return "".join(map(lambda c: ROMAN_TO_KANA.get(c, c), text.lower()))
-
-def get_articles(bsoup):
-    kakaHira = pykakasi.kakasi()
-    kakaHira.setMode("K", "H")
-    kakaHira.setMode("J", "H")
-    converterHira = kakaHira.getConverter()
-    kakaRoman = pykakasi.kakasi()
-    kakaRoman.setMode("H", "a")
-    kakaRoman.setMode("K", "a")
-    kakaRoman.setMode("J", "a")
-    converterRoman = kakaRoman.getConverter()
-    articles = []
-    rows = bsoup.select("tbody > tr")
-    for row in rows:
-        cols = row.select("td")
-        if len(cols) == 3:
-            t = list(map(lambda col: col.get_text(strip=True), cols))
-            name = mojimoji.zen_to_han(t[0], kana=False)
-            name_kana = roman_to_kana(converterHira.do(name))
-            name_roman = converterRoman.do(name)
-            categoryId = CATEGORY_MAP.get(t[1], "unknown")
-            note = t[2]
-
-            if categoryId == "unknown":
-                if "家電リサイクル法対象" in note:
-                    categoryId = "legalrecycling"
-                elif "集団資源回収" in note:
-                    categoryId = "localcollection"
-                elif "ご相談ください" in note:
-                    categoryId = "uncollectible"
-
-            article = {
-                "name": name,
-                "nameKana": name_kana,
-                "nameRoman": name_roman,
-                "categoryId": categoryId
-            }
-            if note:
-                article["note"] = note
-
-            articles.append(article)
-    return articles
-
-def get_updated_at(bsoup):
-    try:
-        s = bsoup.select_one("span.syosai_hiduke").get_text()
-        return datetime.strptime(s, "最終更新日：%Y年%m月%d日")
-    except:
-        return None
-
-def main(args):
-    last_updated_at = datetime.min
-    articles = []
-    for page in TARGET_PAGES:
-        uri = TARGET_URI_BASE + page
-        page_text = get_page_text(uri)
-        if page_text:
-            bsoup = BeautifulSoup(page_text, "html.parser")
-            articles.extend(get_articles(bsoup))
-            updated_at = get_updated_at(bsoup)
-            if updated_at and last_updated_at < updated_at:
-                last_updated_at = updated_at
-    localCategoryDefinition = {
-        "hazardous": {
-            "name": "発火性危険物"
-        },
-        "recyclable": {
-            "name": "資源ステーション",
-            "subCategories": {
-                "paperpackaging": { "name": "紙製容器包装" },
-                "plasticpackaging": { "name": "プラ容器包装" },
-                "grassbottole": { "name": "空きびん" },
-                "can": { "name": "空き缶" }
-            }
-        },
-        "pointcollection": {
-            "name": "回収ボックス",
-            "subCategories": {
-                "beveragepack": { "name": "紙パック" },
-                "petbottle": { "name": "ペットボトル" },
-                "edibleoil": { "name": "食用油" },
-                "smallappliances": { "name": "小型家電" }
+class GomigetAichiNagoyaShi(GomigetBase):
+    def __init__(self):
+        setting = GomigetSetting()
+        setting.prefecture_name = "愛知県"
+        setting.municipality_name = "名古屋市"
+        setting.data_source_url = "http://www.city.nagoya.jp/kurashi/category/5-6-22-0-0-0-0-0-0-0.html"
+        setting.target_url_base = "http://www.city.nagoya.jp/kankyo/page/"
+        setting.target_pages = [ "0000066278.html", "0000066280.html", "0000066282.html", "0000066283.html", "0000066302.html", "0000066303.html", "0000066305.html", "0000066307.html", "0000066308.html", "0000066309.html" ]
+        setting.datetime_selector = "span.syosai_hiduke"
+        setting.datetime_pattern = "最終更新日：%Y年%m月%d日"
+        setting.article_row_selector = "tbody > tr"
+        setting.article_column_selector = "td"
+        setting.text_to_category_id = {
+            "可燃ごみ": "burnable",
+            "不燃ごみ": "unburnable",
+            "粗大ごみ": "oversized",
+            "発火性危険物": "hazardous",
+            "紙製容器包装": "paperpackaging",
+            "プラ容器包装": "plasticpackaging",
+            "空きびん": "grassbottole",
+            "空き缶": "can",
+            "紙パック": "beveragepack",
+            "食用油": "edibleoil",
+            "小型家電": "smallappliances"
+        }
+        setting.note_to_category_id = [
+            { "pattern": re.compile(".*家電リサイクル法対象.*"), "category_id": "legalrecycling" },
+            { "pattern": re.compile(".*集団資源回収.*"), "category_id": "localcollection" },
+            { "pattern": re.compile(".*ご相談ください.*"), "category_id": "uncollectible" }
+        ]
+        setting.local_category_definition = {
+            "hazardous": {
+                "name": "発火性危険物"
+            },
+            "recyclable": {
+                "name": "資源ステーション",
+                "subCategories": {
+                    "paperpackaging": { "name": "紙製容器包装" },
+                    "plasticpackaging": { "name": "プラ容器包装" },
+                    "grassbottole": { "name": "空きびん" },
+                    "can": { "name": "空き缶" }
+                }
+            },
+            "pointcollection": {
+                "name": "回収ボックス",
+                "subCategories": {
+                    "beveragepack": { "name": "紙パック" },
+                    "petbottle": { "name": "ペットボトル" },
+                    "edibleoil": { "name": "食用油" },
+                    "smallappliances": { "name": "小型家電" }
+                }
             }
         }
-    }
-    result = {
-         "municipality": "名古屋市",
-         "updatedAt": last_updated_at.strftime("%Y-%m-%d"),
-         "sourceUrl": SOURCE_URI,
-         "articles": articles,
-         "localCategoryDefinition": localCategoryDefinition
-    }
-    json_text = json.dumps(result, indent=2, ensure_ascii=False)
-    print(json_text)
+        super(GomigetAichiNagoyaShi, self).__init__(setting)
+
+def main(args):
+    print(GomigetAichiNagoyaShi().as_json())
 
 if __name__ == "__main__":
     main(sys.argv)

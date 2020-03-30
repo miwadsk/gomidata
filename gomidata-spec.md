@@ -11,21 +11,22 @@
 
 # 2. データ構成
 
-* "municipality" (自治体名) : String
+* "prefectureName" (都道府県名) : String
+* "municipalityName" (自治体名) : String
+* "dataSourceUrl" ([情報取得元URL](#情報取得元URL)) : String (任意)
 * "updatedAt" ([情報更新日](#情報更新日)) : String (任意)
-* "sourceUrl" ([情報取得元URL](#情報取得元URL)) : String (任意)
-* "articles" (品目情報の並び) : Array
-  * "name" (品目名) : String
-  * "nameKana" (品目名仮名) : String (任意)
-  * "nameRoman" (品目名ローマ字) : String (任意)
-  * "categoryId" ([共通分類ID](#共通分類ID) または [自治体固有分類ID](#自治体固有分類ID)) : String
-  * "note" (備考) : String (任意)
 * "localCategoryDefinition" ([自治体固有分類定義](#自治体固有分類定義)) : Object (任意)
   * ([共通分類ID](#共通分類ID)) : String
     * "name" ([自治体固有表示名](#自治体固有表示名)) : String (任意)
     * "subCategories" : Object (任意)
       * ([自治体固有分類ID](#自治体固有分類ID)) : Object
         * "name" (表示名) : String
+* "articles" (品目情報の並び) : Array
+  * "name" (品目名) : String
+  * "nameKana" (品目名仮名) : String (任意)
+  * "nameRoman" (品目名ローマ字) : String (任意)
+  * "categoryId" ([共通分類ID](#共通分類ID) または [自治体固有分類ID](#自治体固有分類ID)) : String
+  * "note" (備考) : String (任意)
 
 ### 情報更新日
 
@@ -71,9 +72,22 @@ ID に使用できる文字は英小文字と数字です。
 
 ```json
 {
-  "municipality": "豊川市",
+  "prefectureName": "愛知県",
+  "municipalityName": "豊川市",
+  "dataSourceUrl": "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/index.html",
   "updatedAt": "2020-03-01",
-  "sourceUrl": "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/index.html",
+  "localCategoryDefinition": {
+    "recyclable": {
+      "name": "資源ステーション",
+      "subCategories": {
+        "paperpackaging": {
+          "name": "紙製容器包装"
+        },
+        ...
+      }
+    },
+    ...
+  },
   "articles": [
     {
       "name": "アイスピック",
@@ -87,18 +101,6 @@ ID に使用できる文字は英小文字と数字です。
       "categoryId": "burnable"
     },
     ...
-  ],
-  "localCategoryDefinition": {
-    "recyclable": {
-      "name": "資源ステーション",
-      "subCategories": {
-        "paperpackaging": {
-          "name": "紙製容器包装"
-        },
-        ...
-      }
-    },
-    ...
-  }
+  ]
 }
 ```
