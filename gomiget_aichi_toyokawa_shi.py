@@ -2,21 +2,21 @@
 
 import re
 import sys
-from gomiget import GomigetBase, GomigetSetting
+from gomiget_base import GomigetBase, GomigetParameter
 
 class GomigetAichiToyokawaShi(GomigetBase):
     def __init__(self):
-        setting = GomigetSetting()
-        setting.prefecture_name = "愛知県"
-        setting.municipality_name = "豊川市"
-        setting.data_source_url = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
-        setting.target_url_base = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
-        setting.target_pages = [ "agyo.html", "kagyo.html", "sagyo.html", "tagyo.html", "nagyo.html", "hagyo.html", "magyo.html", "yagyo.html", "ragyo.html", "wagyo.html" ]
-        setting.datetime_selector = "p.update"
-        setting.datetime_pattern = "更新日:%Y年%m月%d日"
-        setting.article_row_selector = "caption ~ tr"
-        setting.article_column_selector = "td"
-        setting.text_to_category_id = {
+        parameter = GomigetParameter()
+        parameter.prefecture_name = "愛知県"
+        parameter.municipality_name = "豊川市"
+        parameter.data_source_url = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
+        parameter.target_url_base = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
+        parameter.target_pages = [ "agyo.html", "kagyo.html", "sagyo.html", "tagyo.html", "nagyo.html", "hagyo.html", "magyo.html", "yagyo.html", "ragyo.html", "wagyo.html" ]
+        parameter.datetime_selector = "p.update"
+        parameter.datetime_pattern = "更新日:%Y年%m月%d日"
+        parameter.article_row_selector = "caption ~ tr"
+        parameter.article_column_selector = "td"
+        parameter.text_to_category_id = {
             "可燃ごみ": "burnable",
             "不燃ごみ": "unburnable",
             "資源": "recyclable",
@@ -25,9 +25,9 @@ class GomigetAichiToyokawaShi(GomigetBase):
             "家電リサイクル法対象品目": "legalrecycling",
             "市で処理できません。": "uncollectible"
         }
-        setting.note_to_category_id = None
-        setting.local_category_definition = None
-        super(GomigetAichiToyokawaShi, self).__init__(setting)
+        parameter.note_to_category_id = None
+        parameter.local_category_definition = None
+        super(GomigetAichiToyokawaShi, self).__init__(parameter)
 
 def main(args):
     print(GomigetAichiToyokawaShi().as_json())
