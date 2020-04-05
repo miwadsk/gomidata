@@ -22,6 +22,7 @@ class GomigetAichiNagoyaShi(GomigetBase):
             "粗大ごみ": "oversized",
             "発火性危険物": "hazardous",
             "紙製容器包装": "recyclable.paperpackaging",
+            "ペットボトル": "recyclable.petbottle",
             "プラ容器包装": "recyclable.plasticpackaging",
             "空きびん": "recyclable.grassbottole",
             "空き缶": "recyclable.can",
@@ -32,15 +33,19 @@ class GomigetAichiNagoyaShi(GomigetBase):
         parameter.note_to_category_id = [
             { "pattern": re.compile(r".*家電リサイクル法対象.*"), "category_id": "legalrecycling" },
             { "pattern": re.compile(r".*集団資源回収.*"), "category_id": "localcollection" },
-            { "pattern": re.compile(r".*ご相談ください.*"), "category_id": "uncollectible" }
+            { "pattern": re.compile(r".*小型家電回収ボックス.*"), "category_id": "pointcollection.smallappliances" },
+            { "pattern": re.compile(r".*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*"), "category_id": "uncollectible" },
         ]
         parameter.local_category_definition = {
             "hazardous": {
-                "name": "発火性危険物"
+                "subCategories": {
+                    "hazardous.ignitable": { "name": "発火性危険物" }
+                }
             },
             "recyclable": {
                 "subCategories": {
                     "recyclable.paperpackaging": { "name": "紙製容器包装" },
+                    "recyclable.petbottle": { "name": "ペットボトル" },
                     "recyclable.plasticpackaging": { "name": "プラ容器包装" },
                     "recyclable.grassbottole": { "name": "空きびん" },
                     "recyclable.can": { "name": "空き缶" }
@@ -49,8 +54,7 @@ class GomigetAichiNagoyaShi(GomigetBase):
             "pointcollection": {
                 "name": "回収ボックス",
                 "subCategories": {
-                    "pointcollection.beveragepack": { "name": "紙パック({categoryName})" },
-                    "pointcollection.petbottle": { "name": "ペットボトル({categoryName})" },
+                    "pointcollection.beveragepack": { "name": "紙パック({categoryName}})" },
                     "pointcollection.edibleoil": { "name": "食用油({categoryName})" },
                     "pointcollection.smallappliances": { "name": "小型家電({categoryName})" }
                 }
