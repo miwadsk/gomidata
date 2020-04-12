@@ -70,7 +70,6 @@ class GomigetBase(object):
                 article = {
                     "name": name,
                     "nameKana": gu.to_hiragana(name),
-                    "nameRoman": gu.to_roman(name),
                     "categoryId": gomientry.category_id
                 }
                 if gomientry.note:

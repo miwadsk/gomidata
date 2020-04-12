@@ -25,8 +25,7 @@
         * "name" ([自治体固有分類名](#自治体固有分類名)) : String
 * "articles" (品目情報の並び) : Array
   * "name" (品目名) : String
-  * "nameKana" (品目名仮名) : String (任意)
-  * "nameRoman" (品目名ローマ字) : String (任意)
+  * "nameKana" (品目名ひらがな) : String (任意)
   * "categoryId" ([共通分類ID](#共通分類ID) または [自治体固有分類ID](#自治体固有分類ID)) : String
   * "note" (備考) : String (任意)
 
