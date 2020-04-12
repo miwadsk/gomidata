@@ -4,7 +4,7 @@ import re
 import sys
 from gomiget_base import GomigetBase, GomigetParameter
 
-class GomigetAichiOkazakiShi(GomigetBase):
+class GomigetAichiOkazaki(GomigetBase):
     def __init__(self):
         parameter = GomigetParameter()
         parameter.prefecture_name = "愛知県"
@@ -68,10 +68,10 @@ class GomigetAichiOkazakiShi(GomigetBase):
                 }
             }
         }
-        super(GomigetAichiOkazakiShi, self).__init__(parameter)
+        super(GomigetAichiOkazaki, self).__init__(parameter)
 
 def main(args):
-    print(GomigetAichiOkazakiShi().as_json())
+    print(GomigetAichiOkazaki().as_json())
 
 if __name__ == "__main__":
     main(sys.argv)
