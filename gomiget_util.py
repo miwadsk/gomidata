@@ -30,9 +30,15 @@ roman_converter = kakasi_roman.getConverter()
 
 def get_bsoup(uri) -> BeautifulSoup:
     try:
-        response = requests.get(uri)
-        response.encoding = response.apparent_encoding
-        return BeautifulSoup(response.text, "html.parser")
+        text = None
+        if uri.startswith("file:"):
+            with open(uri[5:], "r", encoding="utf-8") as f:
+                text = f.read()
+        else:
+            response = requests.get(uri)
+            response.encoding = response.apparent_encoding
+            text = response.text
+        return BeautifulSoup(text, "html.parser")
     except:
         return None
 

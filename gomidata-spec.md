@@ -6,23 +6,22 @@
 
 # 1. 基本事項
 
-* JSON 形式を使用します。
+* JSON形式を使用します。
 * ひとつの自治体につきひとつのファイルを構成します。
 
 # 2. データ構成
 
 ※ (任意) は設定が必須ではない項目を示します。
 
-* "prefectureName" (都道府県名) : String
+* "municipalityId" (市区町村コード) : String
 * "municipalityName" (自治体名) : String
-* "dataSourceUrl" ([情報取得元URL](#情報取得元URL)) : String (任意)
+* "datasourceUrl" ([情報取得元URL](#情報取得元URL)) : String (任意)
 * "updatedAt" ([情報更新日](#情報更新日)) : String (任意)
-* "localCategoryDefinition" ([自治体固有分類定義](#自治体固有分類定義)) : Object (任意)
-  * ([共通分類ID](#共通分類ID)) : String
-    * "name" ([共通分類別名](#共通分類別名)) : String (任意)
-    * "subCategories" : Object (任意)
-      * [自治体固有分類ID](#自治体固有分類ID) : Object
-        * "name" ([自治体固有分類名](#自治体固有分類名)) : String
+* "categoryDefinitions" ([自治体固有分類定義](#自治体固有分類定義)) : Object (任意)
+  * ([共通分類ID](#共通分類ID) または [自治体固有分類ID](#自治体固有分類ID)) : String
+    * "name" (分類名) : String (任意)
+    * "note" (備考) : String (任意)
+    * "icon" (アイコンURL) : String (任意)
 * "articles" (品目情報の並び) : Array
   * "name" (品目名) : String
   * "nameKana" (品目名ひらがな) : String (任意)
@@ -36,65 +35,55 @@
 
 ### 情報取得元URL
 
-分別例情報の取得元としたウェブページへの URL を格納します。
-
-### 共通分類ID
-
-全ての自治体で共通の分類を定義した ID です。
-
-ID               | 共通分類名
------------------|--------------------------
-burnable         | 可燃ごみ
-unburnable       | 不燃ごみ
-oversized        | 粗大ごみ
-hazardous        | 危険ごみ
-recyclable       | 資源
-legalrecycling   | 家電リサイクル法対象品
-pointcollection  | 拠点回収
-localcollection  | 集団回収
-uncollectible    | 回収できません
-unknown          | 分類不明
-
-### 自治体固有分類ID
-
-共通分類ID を細分化した自治体固有の ID です。  
-[自治体固有分類定義](#自治体固有分類定義) で定義する必要があります。  
-ID に使用できる文字は英小文字と数字です。
+分別例情報の取得元としたウェブページへのURLを格納します。
 
 ### 自治体固有分類定義
 
-共通分類ID に対する自治体固有の別名の設定、自治体固有分類ID に対する名前を設定します。
+共通分類ID が示す定義内容の上書きあるいは自治体独自の分類の定義を行います。
 
-### 共通分類別名
+### 共通分類ID
 
-共通分類名 に対して自治体固有の別名を指定します。  
+全ての自治体で共通の分類を識別するIDです。
 
-### 自治体固有分類名
+ID                | 共通分類名
+------------------|--------------------------
+burnable          | 可燃ごみ
+unburnable        | 不燃ごみ
+oversized         | 粗大ごみ
+hazardous         | 危険ごみ
+recyclable        | 資源
+can               | 空き缶
+metal             | 金属
+petbottle         | ペットボトル
+grassbottle       | 空きびん
+reusebottle       | 再利用びん
+beveragepack      | 紙パック
+paperpackaging    | 紙製容器包装
+plasticpackaging  | プラ容器包装
+legalrecycling    | 家電リサイクル法対象品
+pointcollection   | 拠点回収
+localcollection   | 集団回収
+uncollectible     | 回収できません
+unknown           | 分類不明
 
-自治体固有分類IDに対する名前を設定します。  
-文字列中には以下の変数を指定できます。
+### 自治体固有分類ID
 
-変数                 | 置換後の文字列
----------------------|---------------------
-{categoryName}       | [共通分類名](#共通分類名) または [共通分類別名](#共通分類別名)
+自治体固有の分類を識別するIDです。  
+[共通分類ID](#共通分類ID) と重複してはいけません。  
+IDに使用できる文字は英小文字/数字/ハイフン/ピリオドです。  
 
 # 3. データ定義例
 
 ```json
 {
-  "prefectureName": "愛知県",
-  "municipalityName": "豊川市",
-  "dataSourceUrl": "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/index.html",
+  "municipalityId": "232076",
+  "municipalityName": "愛知県豊川市",
+  "datasourceUrl": "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/index.html",
   "updatedAt": "2020-03-01",
-  "localCategoryDefinition": {
-    "recyclable": {
-      "name": "資源ステーション",
-      "subCategories": {
-        "paperpackaging": {
-          "name": "紙製容器包装"
-        },
-        ...
-      }
+  "categoryDefinitions": {
+    "paperpackaging": {
+      "name": "紙製容器包装",
+      "icon": "paperpackaging"
     },
     ...
   },

@@ -1,69 +1,60 @@
 #!/usr/bin/env python3
 
-import re
 import sys
-from gomiget_base import GomigetBase, GomigetParameter
+from gomiget_main import Gomiget, PatternValue
 
-class GomigetAichiNagoya(GomigetBase):
-    def __init__(self):
-        parameter = GomigetParameter()
-        parameter.prefecture_name = "愛知県"
-        parameter.municipality_name = "名古屋市"
-        parameter.data_source_url = "http://www.city.nagoya.jp/kurashi/category/5-6-22-0-0-0-0-0-0-0.html"
-        parameter.target_url_base = "http://www.city.nagoya.jp/kankyo/page/"
-        parameter.target_pages = [ "0000066278.html", "0000066280.html", "0000066282.html", "0000066283.html", "0000066302.html", "0000066303.html", "0000066305.html", "0000066307.html", "0000066308.html", "0000066309.html" ]
-        parameter.datetime_selector = "span.syosai_hiduke"
-        parameter.datetime_pattern = "最終更新日：%Y年%m月%d日"
-        parameter.article_row_selector = "tbody > tr"
-        parameter.article_column_selector = "td"
-        parameter.text_to_category_id = {
-            "可燃ごみ": "burnable",
-            "不燃ごみ": "unburnable",
-            "粗大ごみ": "oversized",
-            "発火性危険物": "hazardous",
-            "紙製容器包装": "recyclable.paperpackaging",
-            "ペットボトル": "recyclable.petbottle",
-            "プラ容器包装": "recyclable.plasticpackaging",
-            "空きびん": "recyclable.grassbottole",
-            "空き缶": "recyclable.can",
-            "紙パック": "pointcollection.beveragepack",
-            "食用油": "pointcollection.edibleoil",
-            "小型家電": "pointcollection.smallappliances"
-        }
-        parameter.note_to_category_id = [
-            { "pattern": re.compile(r".*家電リサイクル法対象.*"), "category_id": "legalrecycling" },
-            { "pattern": re.compile(r".*集団資源回収.*"), "category_id": "localcollection" },
-            { "pattern": re.compile(r".*小型家電回収ボックス.*"), "category_id": "pointcollection.smallappliances" },
-            { "pattern": re.compile(r".*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*"), "category_id": "uncollectible" },
-        ]
-        parameter.local_category_definition = {
-            "hazardous": {
-                "subCategories": {
-                    "hazardous.ignitable": { "name": "発火性危険物" }
-                }
-            },
-            "recyclable": {
-                "subCategories": {
-                    "recyclable.paperpackaging": { "name": "紙製容器包装" },
-                    "recyclable.petbottle": { "name": "ペットボトル" },
-                    "recyclable.plasticpackaging": { "name": "プラ容器包装" },
-                    "recyclable.grassbottole": { "name": "空きびん" },
-                    "recyclable.can": { "name": "空き缶" }
-                }
-            },
-            "pointcollection": {
-                "name": "回収ボックス",
-                "subCategories": {
-                    "pointcollection.beveragepack": { "name": "紙パック({categoryName}})" },
-                    "pointcollection.edibleoil": { "name": "食用油({categoryName})" },
-                    "pointcollection.smallappliances": { "name": "小型家電({categoryName})" }
-                }
-            }
-        }
-        super(GomigetAichiNagoya, self).__init__(parameter)
-
-def main(args):
-    print(GomigetAichiNagoya().as_json())
+def main(argv):
+    gomiget = Gomiget()
+    gomiget.municipality_id = "231002"
+    gomiget.municipality_name = "愛知県名古屋市"
+    gomiget.datasource_url = "http://www.city.nagoya.jp/kurashi/category/5-6-22-0-0-0-0-0-0-0.html"
+    gomiget.target_url_base = "http://www.city.nagoya.jp/kankyo/page/"
+    gomiget.target_pages = [ "0000066278.html", "0000066280.html", "0000066282.html", "0000066283.html", "0000066302.html", "0000066303.html", "0000066305.html", "0000066307.html", "0000066308.html", "0000066309.html" ]
+    gomiget.datetime_selector = "span.syosai_hiduke"
+    gomiget.datetime_pattern = "最終更新日：%Y年%m月%d日"
+    gomiget.article_row_selector = "tbody > tr"
+    gomiget.article_column_selector = "td"
+    gomiget.category_to_category_id = [
+        PatternValue("可燃ごみ", "burnable"),
+        PatternValue("不燃ごみ", "unburnable"),
+        PatternValue("粗大ごみ", "oversized"),
+        PatternValue("発火性危険物", "hazardous"),
+        PatternValue("紙製容器包装", "paperpackaging"),
+        PatternValue("プラ容器包装", "plasticpackaging"),
+        PatternValue("ペットボトル", "petbottle"),
+        PatternValue("空きびん", "grassbottle"),
+        PatternValue("空き缶", "can"),
+        PatternValue("紙パック", "beveragepack"),
+        PatternValue("食用油", "pointcollection.edibleoil"),
+        PatternValue("小型家電", "pointcollection.smallappliances")
+    ]
+    gomiget.note_to_category_id = [
+        PatternValue(r"/.*処理して可燃ごみへ/", "burnable"),
+        PatternValue(r"/.*家電リサイクル法対象.*/", "legalrecycling"),
+        PatternValue(r"/.*集団資源回収.*/", "localcollection"),
+        PatternValue(r"/.*小型家電回収ボックス.*/", "pointcollection.smallappliances"),
+        PatternValue(r"/.*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*/", "uncollectible")
+    ]
+    gomiget.category_definitions = {
+        "burnable": { "name": "可燃ごみ" },
+        "unburnable": { "name": "不燃ごみ" },
+        "oversized": { "name": "粗大ごみ" },
+        "hazardous": { "name": "発火性危険物" },
+        "paperpackaging": { "name": "紙製容器包装" },
+        "plasticpackaging": { "name": "プラ容器包装" },
+        "beveragepack": { "name": "紙パック" },
+        "petbottle": { "name": "ペットボトル" },
+        "grassbottle": { "name": "空きびん" },
+        "can": { "name": "空き缶" },
+        "legalrecycling": { "name": "集団資源回収" },
+        "pointcollection": { "name": "回収ボックス" },
+        "pointcollection.edibleoil": { "name": "回収ボックス(食用油)" },
+        "pointcollection.smallappliances": { "name": "回収ボックス(小型家電)" },
+        "localcollection": { "name": "集団資源回収" },
+        "legalrecycling": { "name": "家電リサイクル法対象" },
+        "uncollectible": { "name": "回収できません" }
+    }
+    print(gomiget.to_json())
 
 if __name__ == "__main__":
     main(sys.argv)
