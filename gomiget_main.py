@@ -7,6 +7,12 @@ import gomiget_util as gu
 from datetime import datetime
 from bs4 import BeautifulSoup
 
+def overrides(super_class):
+    def overrider(method):
+        assert(method.__name__ in dir(super_class))
+        return method
+    return overrider
+
 class PatternValue(object):
     def __init__(self, pattern, value):
             if pattern[:1] == "/" and pattern[-1:] == "/":
@@ -25,6 +31,13 @@ class PatternValue(object):
             if value:
                 return value
         return None
+
+class ArticleRow(object):
+    pass
+    # def __init__(self):
+    #     self.name = None
+    #     self.category = None
+    #     self.note = None
 
 class Gomiget(object):
     def __init__(self):
@@ -55,6 +68,15 @@ class Gomiget(object):
     def to_json(self) -> str:
         gomidata = self.__get_gomidata()
         return json.dumps(gomidata, indent=2, ensure_ascii=False)
+
+    def get_article_row(self, texts):
+        if len(texts) < 2:
+            return None
+        row = ArticleRow()
+        row.name = texts[0]
+        row.category = texts[1]
+        row.note = texts[2] if 3 <= len(texts) else None
+        return row
     
     def __get_gomidata(self) -> dict:
         """設定されているパラメータを元にごみ分別データを取得します。"""
@@ -89,18 +111,15 @@ class Gomiget(object):
         rows = bsoup.select(self.article_row_selector)
         for row in rows:
             columns = row.select(self.article_column_selector)
-            column_texts = list(map(lambda col: col.get_text(strip=True), columns))
-            if 2 <= len(column_texts):
-                name = column_texts[0]
-                category = column_texts[1]
-                note = column_texts[2] if 3 <= len(column_texts) else None
+            row = self.get_article_row(list(map(lambda col: col.get_text(strip=True), columns)))
+            if row:
                 article = {
-                    "name": gu.normalized(name),
-                    "nameKana": gu.to_hiragana(name),
-                    "categoryId": self.__get_category_id(category, note)
+                    "name": gu.normalized(row.name),
+                    "nameKana": gu.to_hiragana(row.name),
+                    "categoryId": self.__get_category_id(row.category, row.note)
                 }
-                if note:
-                    article["note"] = note
+                if row.note:
+                    article["note"] = row.note
                 articles.append(article)
         return articles
 
