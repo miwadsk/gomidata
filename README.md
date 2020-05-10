@@ -14,9 +14,15 @@
 
 ### データ取得プログラム
 
-対象自治体名 | プログラムファイル名
--------------|------------------------
-豊川市       | [gomiget_toyokawa.py](gomiget_toyokawa.py)
+対象自治体名   | プログラムファイル名
+---------------|------------------------------
+愛知県豊川市   | [gomiget_aichi_toyokawa.py](gomiget_aichi_toyokawa.py)
+愛知県名古屋市 | [gomiget_aichi_nagoya.py](gomiget_aichi_nagoya.py)
+愛知県岡崎市   | [gomiget_aichi_okazaki.py](gomiget_aichi_okazaki.py)
+愛知県豊田市   | [gomiget_aichi_toyota.py](gomiget_aichi_toyota.py)
+愛知県一宮市   | [gomiget_aichi_ichinomiya.py](gomiget_aichi_ichinomiya.py)
+愛知県豊橋市   | [gomiget_aichi_toyohashi.py](gomiget_aichi_toyohashi.py)
+愛知県安城市   | [gomiget_aichi_anjo.py](gomiget_aichi_anjo.py)
 
 ### ライセンス
 
