@@ -1,41 +1,41 @@
 #!/usr/bin/env python3
 
 import sys
-from gomiget_main import Gomiget, PatternValue
+from gomireader import GomiReader, PatternValuePair
 
 def main(argv):
-    gomiget = Gomiget()
-    gomiget.municipality_id = "231002"
-    gomiget.municipality_name = "愛知県名古屋市"
-    gomiget.datasource_url = "http://www.city.nagoya.jp/kurashi/category/5-6-22-0-0-0-0-0-0-0.html"
-    gomiget.target_url_base = "http://www.city.nagoya.jp/kankyo/page/"
-    gomiget.target_pages = [ "0000066278.html", "0000066280.html", "0000066282.html", "0000066283.html", "0000066302.html", "0000066303.html", "0000066305.html", "0000066307.html", "0000066308.html", "0000066309.html" ]
-    gomiget.datetime_selector = "span.syosai_hiduke"
-    gomiget.datetime_pattern = "最終更新日：%Y年%m月%d日"
-    gomiget.article_row_selector = "tbody > tr"
-    gomiget.article_column_selector = "td"
-    gomiget.category_to_category_id = [
-        PatternValue("可燃ごみ", "burnable"),
-        PatternValue("不燃ごみ", "unburnable"),
-        PatternValue("粗大ごみ", "oversized"),
-        PatternValue("発火性危険物", "hazardous"),
-        PatternValue("紙製容器包装", "paperpackaging"),
-        PatternValue("プラ容器包装", "plasticpackaging"),
-        PatternValue("ペットボトル", "petbottle"),
-        PatternValue("空きびん", "grassbottle"),
-        PatternValue("空き缶", "can"),
-        PatternValue("紙パック", "beveragepack"),
-        PatternValue("食用油", "pointcollection.edibleoil"),
-        PatternValue("小型家電", "pointcollection.smallappliances")
+    reader = GomiReader()
+    reader.municipality_id = "231002"
+    reader.municipality_name = "愛知県名古屋市"
+    reader.datasource_url = "http://www.city.nagoya.jp/kurashi/category/5-6-22-0-0-0-0-0-0-0.html"
+    reader.target_url_base = "http://www.city.nagoya.jp/kankyo/page/"
+    reader.target_pages = [ "0000066278.html", "0000066280.html", "0000066282.html", "0000066283.html", "0000066302.html", "0000066303.html", "0000066305.html", "0000066307.html", "0000066308.html", "0000066309.html" ]
+    reader.datetime_selector = "span.syosai_hiduke"
+    reader.datetime_pattern = "最終更新日：%Y年%m月%d日"
+    reader.article_row_selector = "tbody > tr"
+    reader.article_column_selector = "td"
+    reader.category_to_category_id = [
+        PatternValuePair("可燃ごみ", "burnable"),
+        PatternValuePair("不燃ごみ", "unburnable"),
+        PatternValuePair("粗大ごみ", "oversized"),
+        PatternValuePair("発火性危険物", "hazardous"),
+        PatternValuePair("紙製容器包装", "paperpackaging"),
+        PatternValuePair("プラ容器包装", "plasticpackaging"),
+        PatternValuePair("ペットボトル", "petbottle"),
+        PatternValuePair("空きびん", "grassbottle"),
+        PatternValuePair("空き缶", "can"),
+        PatternValuePair("紙パック", "beveragepack"),
+        PatternValuePair("食用油", "pointcollection.edibleoil"),
+        PatternValuePair("小型家電", "pointcollection.smallappliances")
     ]
-    gomiget.note_to_category_id = [
-        PatternValue(r"/.*処理して可燃ごみへ/", "burnable"),
-        PatternValue(r"/.*家電リサイクル法対象.*/", "legalrecycling"),
-        PatternValue(r"/.*集団資源回収.*/", "localcollection"),
-        PatternValue(r"/.*小型家電回収ボックス.*/", "pointcollection.smallappliances"),
-        PatternValue(r"/.*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*/", "uncollectible")
+    reader.note_to_category_id = [
+        PatternValuePair(r"/.*処理して可燃ごみへ/", "burnable"),
+        PatternValuePair(r"/.*家電リサイクル法対象.*/", "legalrecycling"),
+        PatternValuePair(r"/.*集団資源回収.*/", "localcollection"),
+        PatternValuePair(r"/.*小型家電回収ボックス.*/", "pointcollection.smallappliances"),
+        PatternValuePair(r"/.*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*/", "uncollectible")
     ]
-    gomiget.category_definitions = {
+    reader.category_definitions = {
         "burnable": { "name": "可燃ごみ" },
         "unburnable": { "name": "不燃ごみ" },
         "oversized": { "name": "粗大ごみ" },
@@ -54,7 +54,7 @@ def main(argv):
         "legalrecycling": { "name": "家電リサイクル法対象" },
         "uncollectible": { "name": "回収できません" }
     }
-    print(gomiget.to_json())
+    print(reader.to_json())
 
 if __name__ == "__main__":
     main(sys.argv)

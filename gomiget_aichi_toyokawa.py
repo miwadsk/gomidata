@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
 
 import sys
-from gomiget_main import Gomiget, PatternValue
+from gomireader import GomiReader, PatternValuePair
 
 def main(argv):
-    gomiget = Gomiget()
-    gomiget.municipality_id = "232076"
-    gomiget.municipality_name = "愛知県豊川市"
-    gomiget.datasource_url = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
-    gomiget.target_url_base = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
-    gomiget.target_pages = [ "agyo.html", "kagyo.html", "sagyo.html", "tagyo.html", "nagyo.html", "hagyo.html", "magyo.html", "yagyo.html", "ragyo.html", "wagyo.html" ]
-    gomiget.datetime_selector = "p.update"
-    gomiget.datetime_pattern = "更新日:%Y年%m月%d日"
-    gomiget.article_row_selector = "caption ~ tr"
-    gomiget.article_column_selector = "td"
-    gomiget.category_to_category_id = [
-        PatternValue("可燃ごみ", "burnable"),
-        PatternValue("不燃ごみ", "unburnable"),
-        PatternValue("資源", "recyclable"),
-        PatternValue("危険ごみ", "hazardous"),
-        PatternValue("粗大ごみ", "oversized"),
-        PatternValue("家電リサイクル法対象品目", "legalrecycling"),
-        PatternValue("市で処理できません。", "uncollectible")
+    reader = GomiReader()
+    reader.municipality_id = "232076"
+    reader.municipality_name = "愛知県豊川市"
+    reader.datasource_url = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
+    reader.target_url_base = "https://www.city.toyokawa.lg.jp/smph/kurashi/gomirecycle/gomihayamihyo/"
+    reader.target_pages = [ "agyo.html", "kagyo.html", "sagyo.html", "tagyo.html", "nagyo.html", "hagyo.html", "magyo.html", "yagyo.html", "ragyo.html", "wagyo.html" ]
+    reader.datetime_selector = "p.update"
+    reader.datetime_pattern = "更新日:%Y年%m月%d日"
+    reader.article_row_selector = "caption ~ tr"
+    reader.article_column_selector = "td"
+    reader.category_to_category_id = [
+        PatternValuePair("可燃ごみ", "burnable"),
+        PatternValuePair("不燃ごみ", "unburnable"),
+        PatternValuePair("資源", "recyclable"),
+        PatternValuePair("危険ごみ", "hazardous"),
+        PatternValuePair("粗大ごみ", "oversized"),
+        PatternValuePair("家電リサイクル法対象品目", "legalrecycling"),
+        PatternValuePair("市で処理できません。", "uncollectible")
     ]
-    # gomiget.note_to_category_id
-    gomiget.category_definitions = {
+    # reader.note_to_category_id
+    reader.category_definitions = {
         "burnable": { "name": "可燃ごみ" },
         "unburnable": { "name": "不燃ごみ" },
         "recyclable": { "name": "資源" },
@@ -33,7 +33,7 @@ def main(argv):
         "legalrecycling": { "name": "家電リサイクル法対象" },
         "uncollectible": { "name": "回収できません" }
     }
-    print(gomiget.to_json())
+    print(reader.to_json())
 
 if __name__ == "__main__":
     main(sys.argv)
