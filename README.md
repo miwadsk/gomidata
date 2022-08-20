@@ -23,6 +23,7 @@
 愛知県一宮市   | [gomiget_aichi_ichinomiya.py](gomiget_aichi_ichinomiya.py)
 愛知県豊橋市   | [gomiget_aichi_toyohashi.py](gomiget_aichi_toyohashi.py)
 愛知県安城市   | [gomiget_aichi_anjo.py](gomiget_aichi_anjo.py)
+愛知県瀬戸市   | [gomiget_aichi_seto.py](gomiget_aichi_seto.py)
 
 ### ライセンス
 
