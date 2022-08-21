@@ -26,14 +26,16 @@ def main(argv):
         PatternValuePair("空き缶", "can"),
         PatternValuePair("紙パック", "beveragepack"),
         PatternValuePair("食用油", "pointcollection.edibleoil"),
-        PatternValuePair("小型家電", "pointcollection.smallappliances")
+        PatternValuePair("小型家電", "pointcollection.smallappliances"),
+        PatternValuePair("電池類", "battery")
     ]
     reader.note_to_category_id = [
         PatternValuePair(r"/.*処理して可燃ごみへ/", "burnable"),
         PatternValuePair(r"/.*家電リサイクル法対象.*/", "legalrecycling"),
         PatternValuePair(r"/.*集団資源回収.*/", "localcollection"),
         PatternValuePair(r"/.*小型家電回収ボックス.*/", "pointcollection.smallappliances"),
-        PatternValuePair(r"/.*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*/", "uncollectible")
+        PatternValuePair(r"/.*(環境事業所|協力店|販売店|消火器|病院・診療所|ご相談ください).*/", "uncollectible"),
+        PatternValuePair(r"/できるだけ自然に戻す.*/", "uncollectible")
     ]
     reader.category_definitions = {
         "burnable": { "name": "可燃ごみ" },
@@ -52,6 +54,7 @@ def main(argv):
         "pointcollection.smallappliances": { "name": "回収ボックス(小型家電)" },
         "localcollection": { "name": "集団資源回収" },
         "legalrecycling": { "name": "家電リサイクル法対象" },
+        "battery": { "name": "電池類" },
         "uncollectible": { "name": "回収できません" }
     }
     print(reader.to_json())
