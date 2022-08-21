@@ -18,9 +18,11 @@ def main(argv):
     reader.article_row_selector = "tbody > tr"
     reader.article_column_selector = "td"
     reader.category_to_category_id = {
-        PatternValuePair(r"/（?可燃ごみ）?/", "burnable"),
-        PatternValuePair("不燃ごみ", "unburnable"),
-        PatternValuePair("粗大ごみ", "oversized"),
+        PatternValuePair(r"/（?可燃ごみ.*/", "burnable"),
+        PatternValuePair("（注意）可燃ごみ", "burnable.medical"),
+        PatternValuePair(r"/不燃ごみ.*/", "unburnable"),
+        PatternValuePair("（不燃ごみ・埋立ごみ）", "unburnable.sandorlandfill"),
+        PatternValuePair(r"/粗大ごみ.*/", "oversized"),
         PatternValuePair("有害ごみ", "hazardous.harmful"),
         PatternValuePair("発火性危険ごみ", "hazardous.ignitable"),
         PatternValuePair("紙製容器包装", "paperpackaging"),
@@ -28,21 +30,22 @@ def main(argv):
         PatternValuePair("ペットボトル", "petbottle"),
         PatternValuePair("空き缶", "can"),
         PatternValuePair("処理困難物", "uncollectible.difficult"),
-        PatternValuePair("リサイクル料金が必要。製造メーカーの電話受付窓口へ", "uncollectible.makercollection"),
-        PatternValuePair(r"/家電4品目\sリサイクル料金が必要/", "legalrecycling")
+        PatternValuePair("リサイクル", "uncollectible.makercollection"),
+        PatternValuePair("家電4品目", "legalrecycling"),
+        PatternValuePair("拠点回収", "pointcollection"),
+        PatternValuePair("小型家電", "pointcollection.smallappliance"),
+        PatternValuePair("回収協力店／拠点回収", "pointcollection.sellercollection"),
+        PatternValuePair("資源回収／拠点回収", "localcollection"),
+        PatternValuePair("埋立ごみ", "unburnable.landfill"),
+        PatternValuePair("生きびん", "reusebottle"),
+        PatternValuePair("空きびん", "grassbottle")
     }
-    reader.note_to_category_id = [
-        PatternValuePair("資源回収または拠点回収へ", "localcollection"),
-        PatternValuePair(r"/.*回収協力店へ.*/", "pointcollection"),
-        PatternValuePair(r"/.*販売店へ.*/", "uncollectible.sellercollection"),
-        PatternValuePair(r"/.*自主回収へ.*/", "uncollectible.sellercollection"),
-        PatternValuePair(r"/.*青色のコンテナへ/", "can"),
-        PatternValuePair(r"/.*茶色のコンテナへ/", "grassbottle"),
-        PatternValuePair(r"/.*白色のコンテナへ/", "reusebottle")
-    ]
     reader.category_definitions = {
         "burnable": { "name": "可燃ごみ" },
+        "burnable.medical": { "name": "可燃ごみ" },
         "unburnable": { "name": "不燃ごみ" },
+        "unburnable.sandorlandfill": { "name": "不燃ごみまたは埋立ごみ" },
+        "unburnable.landfill": { "name": "埋立ごみ" },
         "oversized": { "name": "粗大ごみ" },
         "hazardous": { "name": "危険/有害ごみ" },
         "hazardous.ignitable": { "name": "発火性危険ごみ" },
@@ -53,13 +56,14 @@ def main(argv):
         "reusebottle": { "name": "生きびん" },
         "grassbottle": { "name": "空きびん" },
         "can": { "name": "空き缶" },
-        "localcollection": { "name": "資源回収/拠点回収" },
-        "pointcollection": { "name": "回収ボックス" },
+        "localcollection": { "name": "資源回収または拠点回収" },
+        "pointcollection": { "name": "拠点回収" },
+        "pointcollection.smallappliance": { "name": "拠点回収" },
+        "pointcollection.sellercollection": { "name": "回収協力店または拠点回収" },
         "legalrecycling": { "name": "家電リサイクル法対象" },
         "uncollectible": { "name": "回収できません" },
         "uncollectible.difficult": { "name": "回収できません(処理困難)" },
-        "uncollectible.sellercollection": { "name": "回収できません(販売店回収)" },
-        "uncollectible.makercollection": { "name": "回収できません(メーカー回収)" }
+        "uncollectible.makercollection": { "name": "回収できません(メーカーまたは販売店回収)" }
     }
     print(reader.to_json())
 

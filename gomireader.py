@@ -90,7 +90,7 @@ class GomiReader(object):
         """指定の文字列リストからGomiArticleを取得します。
         必要に応じてオーバーライドして下さい。"""
         article = None
-        if 2 <= len(texts):
+        if 2 <= len(texts) and texts[0]:
             article = GomiArticle(
                 name=texts[0],
                 category=texts[1],
