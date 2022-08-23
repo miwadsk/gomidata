@@ -20,7 +20,6 @@
 愛知県名古屋市 | [gomiget_aichi_nagoya.py](gomiget_aichi_nagoya.py)
 愛知県岡崎市   | [gomiget_aichi_okazaki.py](gomiget_aichi_okazaki.py)
 愛知県豊田市   | [gomiget_aichi_toyota.py](gomiget_aichi_toyota.py)
-愛知県一宮市   | [gomiget_aichi_ichinomiya.py](gomiget_aichi_ichinomiya.py)
 愛知県豊橋市   | [gomiget_aichi_toyohashi.py](gomiget_aichi_toyohashi.py)
 愛知県安城市   | [gomiget_aichi_anjo.py](gomiget_aichi_anjo.py)
 愛知県瀬戸市   | [gomiget_aichi_seto.py](gomiget_aichi_seto.py)
