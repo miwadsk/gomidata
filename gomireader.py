@@ -7,6 +7,7 @@ from typing import List, NamedTuple
 import gomireader_util as util
 from datetime import datetime
 from bs4 import BeautifulSoup
+import csv
 
 def overrides(super_class):
     def overrider(method):
@@ -51,6 +52,10 @@ class GomiReader(object):
         # 品目取得
         self.article_row_selector: str = None
         self.article_column_selector: str = None
+        # 品目インデックス
+        self.article_index_name: int = 0
+        self.article_index_category: int = 1
+        self.article_index_note: int = 2
         # 分類文字列から分類IDへ変換
         # PatternValueのリスト
         self.category_to_category_id: str = []
@@ -68,33 +73,42 @@ class GomiReader(object):
         必要に応じてオーバーライドして下さい。"""
         text = util.get_textcontent(url)
         bsoup = BeautifulSoup(text, "html.parser")
-        gomipage = GomiPage(
-            updated_at=self.get_datetime(bsoup),
-            articles=self.get_articles(bsoup)
-        )
-        return gomipage
-
-    def get_articles(self, bsoup: BeautifulSoup) -> List[GomiArticle]:
-        """ウェブページの内容からGomiArticleのリストを取得します。
-        必要に応じてオーバーライドして下さい。"""
         articles = []
-        for row in bsoup.select(self.article_row_selector):
-            cols = row.select(self.article_column_selector)
-            texts = list(map(lambda col: col.get_text(strip=True), cols))
-            article = self.get_article_from_texts(texts)
+        if self.article_row_selector:
+            for row in bsoup.select(self.article_row_selector):
+                cols = row.select(self.article_column_selector)
+                texts = list(map(lambda col: col.get_text(strip=True), cols))
+                article = self.get_article_from_texts(texts)
+                if article:
+                    articles.append(article)
+        return GomiPage(
+                updated_at=self.get_datetime(bsoup),
+                articles=articles)
+
+    def get_gomipage_csv(self, url: str) -> GomiPage:
+        """CSVデータからGomiPageを取得します。
+        必要に応じてオーバーライドして下さい。"""
+        text = util.get_textcontent(url)
+        rows = csv.reader(text.splitlines(), delimiter=",")
+        next(rows)
+        articles = []
+        for row in rows:
+            article = self.get_article_from_texts(row)
             if article:
                 articles.append(article)
-        return articles
+        return GomiPage(
+            updated_at=None,
+            articles=articles)
 
     def get_article_from_texts(self, texts: List[str]):
         """指定の文字列リストからGomiArticleを取得します。
         必要に応じてオーバーライドして下さい。"""
         article = None
-        if 2 <= len(texts) and texts[0]:
+        if max(self.article_index_name, self.article_index_category) < len(texts) and texts[0]:
             article = GomiArticle(
-                name=texts[0],
-                category=texts[1],
-                note=texts[2] if 3 <= len(texts) else None
+                name=texts[self.article_index_name],
+                category=texts[self.article_index_category],
+                note=texts[self.article_index_note] if self.article_index_note < len(texts) else None
             )
         return article
 
@@ -131,7 +145,10 @@ class GomiReader(object):
     def __get_gomipage(self, url: str) -> GomiPage:
         """ウェブページの内容から作成したGomiPageを取得します。"""
         print(url, file=sys.stderr, end="")
-        gomipage = self.get_gomipage(url)
+        if url.endswith(".csv"):
+            gomipage = self.get_gomipage_csv(url)
+        else:
+            gomipage = self.get_gomipage(url)
         if gomipage:
             print(f" -> OK ({len(gomipage.articles)})", file=sys.stderr)
         else:
@@ -177,11 +194,14 @@ def test():
     reader.municipality_name = "test"
     reader.datasource_url = ""
     reader.target_url_base = "file:./"
-    reader.target_pages = [ "test.html" ]
+    reader.target_pages = [ "test.html", "test.csv" ]
     reader.datetime_selector = "p.update"
     reader.datetime_pattern = "更新日:%Y年%m月%d日"
     reader.article_row_selector = "caption ~ tr"
     reader.article_column_selector = "td"
+    reader.article_index_name = 3
+    reader.article_index_category = 5
+    reader.article_index_note = 6
     reader.category_to_category_id = [
         PatternValuePair("可燃ごみ", "burnable"),
         PatternValuePair("不燃ごみ", "unburnable"),

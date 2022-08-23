@@ -1,51 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import List
-from gomireader import GomiReader, GomiPage, GomiArticle, PatternValuePair, overrides
-import gomireader_util as util
-import csv
-from bs4 import BeautifulSoup
-
-class AichiSetoGomiReader(GomiReader):
-    @overrides(GomiReader)
-    def get_gomipage(self, url: str) -> GomiPage:
-        text = util.get_textcontent(url)
-        if url.endswith(".csv"):
-            rows = csv.reader(text.splitlines(), delimiter=",")
-            next(rows)
-            gomipage = GomiPage(
-                updated_at=None,
-                articles=self.get_articles_csv(rows)
-            )
-        else:
-            bsoup = BeautifulSoup(text, "html.parser")
-            gomipage = GomiPage(
-                updated_at=self.get_datetime(bsoup),
-                articles=[]
-            )
-        return gomipage
-
-    def get_articles_csv(self, rows) -> List[GomiArticle]:
-        articles = []
-        for row in rows:
-            article = self.get_article_from_texts_csv(row)
-            if article:
-                articles.append(article)
-        return articles
-
-    def get_article_from_texts_csv(self, texts):
-        article = None
-        if 7 <= len(texts):
-            article = GomiArticle(
-                name=texts[3],
-                category=texts[5],
-                note=texts[6]
-            )
-        return article
+from gomireader import GomiReader, PatternValuePair
 
 def main(argv):
-    reader = AichiSetoGomiReader()
+    reader = GomiReader()
     reader.municipality_id = "232041"
     reader.municipality_name = "愛知県瀬戸市"
     reader.datasource_url = "http://www.city.seto.aichi.jp/docs/2010111003558/"
@@ -54,6 +13,11 @@ def main(argv):
     reader.target_pages = [ "http://www.city.seto.aichi.jp/docs/2010111003558/", "http://bunbetsu.setogomi.com/gomi_dic.csv" ]
     reader.datetime_selector = "div.publishedAt"
     reader.datetime_pattern = "ページ更新日：%Y年%m月%d日"
+    reader.article_row_selector = None
+    reader.article_column_selector = None
+    reader.article_index_name = 3
+    reader.article_index_category = 5
+    reader.article_index_note = 6
     reader.category_to_category_id = [
         PatternValuePair("燃える", "burnable"),
         PatternValuePair("燃えない", "unburnable"),
