@@ -24,6 +24,13 @@
 愛知県安城市   | [gomiget_aichi_anjo.py](gomiget_aichi_anjo.py)
 愛知県瀬戸市   | [gomiget_aichi_seto.py](gomiget_aichi_seto.py)
 
+プログラムの実行には以下のライブラリが必要です。
+
+* requests
+* pykakasi (v1.2.0)
+* mojimoji
+* bs4
+
 ### ライセンス
 
 このリポジトリの内容には CC0 を適用します。
